@@ -27,7 +27,7 @@ No new software was developed for this study, thus we provide example commands f
 #### - Phylogenetic inference
   - Gene trees using [raxml](https://cme.h-its.org/exelixis/web/software/raxml/)
   ```
-  raxmlHPC-PTHREADS -T ${nThreads} -s ${transcriptID.fa} -m ${sustMod} -N ${reps} -p ${seedSearch} -w ${P_out} -f a -N ${bootstrapReps} --bootstop-perms=${bootstrapReps} -n ${transcriptID} -x ${seedSearch} 
+  raxmlHPC-PTHREADS -T ${nThreads} -s ${transcriptID}.fa -m ${sustMod} -N ${reps} -p ${seedSearch} -w ${P_out} -f a -N ${bootstrapReps} --bootstop-perms=${bootstrapReps} -n ${transcriptID} -x ${seedSearch} 
   ```
   
   - Coalescent-based species trees with [ASTRAL](https://github.com/smirarab/ASTRAL)
@@ -49,11 +49,27 @@ No new software was developed for this study, thus we provide example commands f
   iqtree -s SuperMatrix.fas -spp Partition.txt -bb 1000  -bnni  -m GTR+I+G -nt 16  -mem 50G
    ```
 
-#### - Selection analyses
-  - HYPHY
+#### - Selection analyses using [HYPHY-aBSREL](https://stevenweaver.github.io/hyphy-site/methods/selection-methods/)
+  For each transcript, the species tree should be trimmed to kepp only branches represented in alignemnt. We used [tree_doctor](https://github.com/UCSantaCruzComputationalGenomicsLab/phast/blob/master/src/util/tree_doctor.c).
+   ```
+  ## trimm input tree 
+  tree_doctor -a -n -P $(grep '>' ${P_out}/${transcriptID}.fa | sed 's/>//g'| cut -f1 | tr '\n' ',') ${tree} > ${P_out}/${trasncriptID}.prunnedTree.tre
 
-#### - Enrichment analyses
-  - gprofiler
+  ## run absrel
+  hyphy absrel --alignment ${P_out}/${trasncriptID}.fa --tree ${P_out}/${trasncriptID}.prunnedTree.tre --output ${P_out}/${trasncriptID}.ABSREL.json | tee -a ${P_out}/${trasncriptID}.ABSREL.log
+   ```
+
+#### - Enrichment analyses using [gprofiler2](https://biit.cs.ut.ee/gprofiler/page/r)
+   ```R
+   ## Load R and library
+   library(gprofiler2)
+   
+   ## run enrichment per mammalian group
+   multi_sig_noBG_tmp_gostres = gost(listGenes_groups, organism = "hsapiens", significant = TRUE)
+   
+   ## save enrichment summary as tab file
+   write.table(sapply(multi_sig_noBG_tmp_gostres$result, FUN = paste), file=out_summaryErich, sep="\t", quote=FALSE, row.names=FALSE)
+    ```R
 
 #### - Linear regression
 

@@ -6,10 +6,23 @@ No new software was developed for this study, thus we provide example commands f
 ## Analyses
 #### - Genome assembly
 
-#### - Repeat masking
+#### - Annotation of Transposable Elements
+Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)
+
+#### - [Repeat masking](http://www.repeatmasker.org) for pairwise genome alignemnts
+  ```
+  ## build database for RepeatModeler
+  BuildDatabase -name $query ${genome_query.fa}
+  
+  ## run RepeatModeler
+  RepeatModeler -threads $cpu -database ${genome_query.fa}
+  
+  ## run RepeatMasker
+  RepeatMasker -pa $cpu -xsmall -lib consensi.fa.classified ${genome_query.fa}
+  ```
 
 #### - Pairwise genome alignemnts
-  https://github.com/hillerlab/GenomeAlignmentTools
+  Detailed modified UCSC pipeline [here](https://github.com/hillerlab/GenomeAlignmentTools)
 
 #### - Genome annotation using [TOGA](https://github.com/hillerlab/TOGA)
   ```

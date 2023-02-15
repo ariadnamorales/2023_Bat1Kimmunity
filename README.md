@@ -3,40 +3,59 @@ Customs scripts used for analyses of 2022-2023 Bat1K immunity project
 No new software was developed for this study, thus we provide example commands for analyses or provide links to other sources employed.
 
 
-## analyses
-####- Genome assembly
+## Analyses
+#### - Genome assembly
 
-- Repeat masking
+#### - Repeat masking
 
-- Pairwise genome alignemnts
+#### - Pairwise genome alignemnts
   https://github.com/hillerlab/GenomeAlignmentTools
 
-- Genome annotation using [TOGA](https://github.com/hillerlab/TOGA)
+#### - Genome annotation using [TOGA](https://github.com/hillerlab/TOGA)
   ```
   toga.py ${chains.ref.query} ${annotation_ref.bed} ${genome_ref.2bit} ${genome_query.2bit} -i ${isoforms.-reftxt} --cb 3,5 --cjn 500 --u12 ${U12sites_ref.tsv} --ms
   ```
- - Exon-by-exon codon alignments and cleaning using [extract_codon_alignment.py](https://github.com/hillerlab/TOGA/blob/master/supply/extract_codon_alignment.py) and [HmmCleaner](https://metacpan.org/dist/Bio-MUST-Apps-HmmCleaner/view/bin/HmmCleaner.pl)
+#### - Exon-by-exon codon alignments and cleaning using [extract_codon_alignment.py](https://github.com/hillerlab/TOGA/blob/master/supply/extract_codon_alignment.py) and [HmmCleaner](https://metacpan.org/dist/Bio-MUST-Apps-HmmCleaner/view/bin/HmmCleaner.pl)
    ```
    ## exon-by-exon alignment
    extract_codon_alignments_from_toga.py ${f_listSP} ${annotation_ref.bed} ${trasncriptID} -o ${trasncriptID}_raw.fa -s
    
    ## cleaning
-   HmmCleaner.pl -costs ${c1} ${c2} ${c3} ${c4} ${trasncriptID}_raw.fa
+   HmmCleaner.pl -costs ${c1} ${c2} ${c3} ${c4} ${transcriptID}_raw.fa
    ```
   
-- Phylogenetic inference
-  - Gene trees
-  - Species trees with ASTRAL
-  - Species trees with iq-tree
+#### - Phylogenetic inference
+  - Gene trees using [raxml](https://cme.h-its.org/exelixis/web/software/raxml/)
+  ```
+  raxmlHPC-PTHREADS -T ${nThreads} -s ${transcriptID.fa} -m ${sustMod} -N ${reps} -p ${seedSearch} -w ${P_out} -f a -N ${bootstrapReps} --bootstop-perms=${bootstrapReps} -n ${transcriptID} -x ${seedSearch} 
+  ```
+  
+  - Coalescent-based species trees with [ASTRAL](https://github.com/smirarab/ASTRAL)
+  ```
+  ## concatenate all raxml gene trees
+  cat ${P_out_raxml}/RAxML_bestTree.${transcriptID}" >> ${all_raxml_inTrees}
+  
+  ##run ASTRAL
+  ${astral_call} -i ${all_raxml_inTrees} -o ${astral_outTree}
+  ```
 
+  - Concatenation-based species trees with [iq-tree](http://www.iqtree.org/)
+  ```
+  ## concatenate all genes
+  ## use https://github.com/ballesterus/Utensils/blob/master/geneStitcher.py
+  geneStitcher.py -in ${Path_aln_fasta}/*.fasta
+  
+  ## run iq-tree
+  iqtree -s SuperMatrix.fas -spp Partition.txt -bb 1000  -bnni  -m GTR+I+G -nt 16  -mem 50G
+   ```
 
-- Selection analyses
+#### - Selection analyses
   - HYPHY
 
-- Enrichment analyses
+#### - Enrichment analyses
   - gprofiler
 
-- Linear regression
+#### - Linear regression
 
 
 

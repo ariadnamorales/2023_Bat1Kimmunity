@@ -13,7 +13,9 @@ No new software was developed for this study, thus we provide example commands f
 
 - Genome annotation using TOGA
   https://github.com/hillerlab/TOGA
+  ```
   toga.py ${chains.ref.query} ${annotation_ref.bed} ${genome_ref.2bit} ${genome_query.2bit} -i ${isoforms.-reftxt} --cb 3,5 --cjn 500 --u12 ${U12sites_ref.tsv} --ms
+  ```
   
  
 - Phylogenetic inference

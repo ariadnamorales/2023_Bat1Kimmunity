@@ -24,7 +24,7 @@ No new software was developed for this study, thus we provide example commands f
    HmmCleaner.pl -costs ${c1} ${c2} ${c3} ${c4} ${transcriptID}_raw.fa
    ```
   
-#### - Phylogenetic inference
+#### - Phylogenetic and Divergence Time Estimation
   - Gene trees using [raxml](https://cme.h-its.org/exelixis/web/software/raxml/)
   ```
   raxmlHPC-PTHREADS -T ${nThreads} -s ${transcriptID}.fa -m ${sustMod} -N ${reps} -p ${seedSearch} -w ${P_out} -f a -N ${bootstrapReps} --bootstop-perms=${bootstrapReps} -n ${transcriptID} -x ${seedSearch} 
@@ -48,8 +48,18 @@ No new software was developed for this study, thus we provide example commands f
   ## run iq-tree
   iqtree -s SuperMatrix.fas -spp Partition.txt -bb 1000  -bnni  -m GTR+I+G -nt 16  -mem 50G
    ```
+   
+  - Divergence time estimation [treePL](https://github.com/blackrim/treePL)
+   ```
+   ## use config file1 to optimize parameters
+   treePL config.1
 
-#### - Selection analyses using [HYPHY-aBSREL](https://stevenweaver.github.io/hyphy-site/methods/selection-methods/)
+   ## see output and generate config.2
+   treePL config.2 treefile=tree_rooted.dated.config2.tre
+   ```
+   
+
+#### - Genome-wide Unbiased Selection Screen using [HYPHY-aBSREL](https://stevenweaver.github.io/hyphy-site/methods/selection-methods/)
   For each transcript, the species tree should be trimmed to kepp only branches represented in alignemnt. We used [tree_doctor](https://github.com/UCSantaCruzComputationalGenomicsLab/phast/blob/master/src/util/tree_doctor.c).
    ```
   ## trimm input tree 
@@ -59,7 +69,7 @@ No new software was developed for this study, thus we provide example commands f
   hyphy absrel --alignment ${P_out}/${trasncriptID}.fa --tree ${P_out}/${trasncriptID}.prunnedTree.tre --output ${P_out}/${trasncriptID}.ABSREL.json | tee -a ${P_out}/${trasncriptID}.ABSREL.log
    ```
 
-#### - Enrichment analyses using [gprofiler2](https://biit.cs.ut.ee/gprofiler/page/r)
+#### - Gene enrichment analyses using [gprofiler2](https://biit.cs.ut.ee/gprofiler/page/r)
    ```R
    ## Load R and library
    library(gprofiler2)
@@ -69,7 +79,7 @@ No new software was developed for this study, thus we provide example commands f
    
    ## save enrichment summary as tab file
    write.table(sapply(multi_sig_noBG_tmp_gostres$result, FUN = paste), file=out_summaryErich, sep="\t", quote=FALSE, row.names=FALSE)
-    ```R
+```
 
 #### - Linear regression
 

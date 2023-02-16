@@ -96,5 +96,5 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
 
 #### -  Correlation between branch length and number of genes under selection
 
-  Negative binomial regression [(see code here)](https://github.com/lmdavalos/count2branches)
+  Negative binomial regression was perfomed using several R libraries, [see code here](https://github.com/lmdavalos/count2branches).
 

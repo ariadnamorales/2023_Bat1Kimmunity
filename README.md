@@ -94,7 +94,7 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
    write.table(sapply(multi_sig_noBG_tmp_gostres$result, FUN = paste), file=out_summaryErich, sep="\t", quote=FALSE, row.names=FALSE)
 ```
 
-#### - Linear regression
+#### -  Correlation between branch length and number of genes under selection
 
-
+  Negative binomial regression [(see code here)](https://github.com/lmdavalos/count2branches)
 

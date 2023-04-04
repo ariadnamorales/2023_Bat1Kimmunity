@@ -32,9 +32,47 @@ No new software was developed for this study, thus we provide example commands f
 
 #### - Scaffolding
   ```
-  ## 
+  ## Scaff10X
+  longranger-2.2.2/longranger mkref contigs.fasta
+  longranger-2.2.2/longranger align --reference=refdata-contigs --fastqs=10x_dir --sample=mRhiAff
+  scaff10x -nodes 24 -bam possorted_bam.bam contigs.fasta scaff10x.fasta
+  longranger-2.2.2/longranger mkref scaff10x.fasta
+  longranger-2.2.2/longranger align --reference=refdata-scaff10x --fastqs=10x_dir --sample=mRhiAff
+  break10x -nodes 24 -bam possorted_bam.bam scaff10x.fasta break10x.fasta
   
+  ## Salsa2
+  bwa index genome.fasta
+  samtools index genome.fasta
+  bwa mem -t24 -B8 genome.fasta hic_R1.fastq.gz | samtools view -@24 -Sb - > hic_R1.bam
+  samtools view -h hic_R1.bam | perl filter_five_end.pl | samtools view -@24 - > hic_R1.filtered.bam
+  bwa mem -t24 -B8 genome.fasta hic_R2.fastq.gz | samtools view -@24 -Sb - > hic_R2.bam
+  samtools view -h hic_R2.bam | perl filter_five_end.pl | samtools view -@24 - > hic_R2.filtered.bam
+  perl two_read_bam_combiner.pl hic_R1.filtered.bam hic_R2.filtered.bam | samtools view -@24 -Sb > hic.combined.bam
+  bash dedup.sh hic.combined.bam 24
+  bedtools bamtobed -i sort_dedup/combined.sort.dp.sort_n.bam > combined.sort.dp.sort_n.bed
+  python2.7 salsa2/SALSA-2.2/run_pipeline.py -a genome.fasta -l genome.fasta.fai -e enz.txt -b combined.sort.dp.sort_n.bed -o salsa2_out -m yes -i 50 -p yes
   ```
+  
+#### - Polishing
+  ```
+  ## PacBio HiFi polishing
+  pbmm2 align mRhiAff.fasta bam.fofn asm_mRhiAff.mapped.bam --sort -j 16 -J 8 --preset CCS -N 1
+  singularity exec -B /projects --bind /usr/lib/locale/ deepvariant.sif /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=mRhiAff.newScaff.fasta --reads=asm_mRhiAff.mapped.bam --output_vcf=mRhiAff.mapped.deepVariant.vcf.gz --num_shards=24
+  bcftools view --threads=12 -i 'FILTER=\"PASS\" && GT=\"1/1\"' -o mRhiAff.mapped.deepVariant.HomFiltered.vcf.gz mRhiAff.mapped.deepVariant.vcf.gz
+  bcftools index mRhiAff.mapped.deepVariant.HomFiltered.vcf.gz
+  bcftools consensus -f mRhiAff.newScaff.fasta -o asm_mRhiAff.deepVariant.fasta mRhiAff.mapped.deepVariant.HomFiltered.vcf.gz
+  
+  ## 10X polishing
+  longranger-2.2.2/longranger mkref genome.fasta
+  longranger-2.2.2/longranger align --reference=refdata-genome --fastqs=10x_dir --sample=mRhiAff
+  freebayes-1.3.2/freebayes/bin/freebayes -f genome.fasta -g 600 --bam possorted.bam | bcftools view --no-version -Ou > freebayes.bcf
+  bcftools view -i -Oz freebayes.bcf > freebayes.vcf
+  merfin/build/bin/merfin -polish -sequence genome.fasta -readmers 10x_database.meryl -peak 32 -vcf freebayes.vcf -output merfin.vcf
+  bcftools view -Oz merfin.vcf > merfin.vcf.gz && bcftools index merfin.vcf.gz
+  bcftools consensus -H 1 -f genome.fasta merfin.vcf.gz > polished_genome.fasta
+  ```
+
+
 #### - Annotation of Transposable Elements
 Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)
 

@@ -2,6 +2,21 @@
 Customs scripts used for analyses of 2022-2023 Bat1K immunity project
 No new software was developed for this study, thus we provide example commands for analyses or provide links to other sources employed.
 
+### Content:
+[GenomeAssembly](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--genome-assembly)<br>
+    *[Contig assembly)](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--contig-assembly)<br>
+    *[Scaffolding](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--contig-assembly)<br>
+    *[Polishing](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--polishing)<br>
+[Annotation of Transposable Elements](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--annotation-of-transposable-elements)<br>
+[Repeat masking](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--repeat-masking-for-pairwise-genome-alignemnts)<br>
+[Pairwise genome alignemnts](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--pairwise-genome-alignemnts)<br>
+[Genome annotation using TOGA](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--genome-annotation-using-toga)<br>
+[Exon-by-exon codon alignments](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--exon-by-exon-codon-alignments-and-cleaning-using-extract_codon_alignmentpy-and-hmmcleaner)<br>
+[Phylogenetic and Divergence Time Estimation](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--phylogenetic-and-divergence-time-estimation)<br>
+[Genome-wide Unbiased Selection Screen](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--genome-wide-unbiased-selection-screen-using-hyphy-absrel)<br>
+[Gene Enrichment Analyses](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--gene-enrichment-analyses-using-gprofiler2)<br>
+[Correlation between branch length and number of genes under selection](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#---correlation-between-branch-length-and-number-of-genes-under-selection)<br>
+
 
 ## Analyses
 ### - Genome assembly
@@ -86,10 +101,10 @@ No new software was developed for this study, thus we provide example commands f
   ```
 
 
-#### - Annotation of Transposable Elements
+### - Annotation of Transposable Elements
 Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)
 
-#### - [Repeat masking](http://www.repeatmasker.org) for pairwise genome alignemnts
+### - [Repeat masking](http://www.repeatmasker.org) for pairwise genome alignemnts
   ```
   ## build database for RepeatModeler
   BuildDatabase -name $query ${genome_query.fa}
@@ -101,14 +116,14 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
   RepeatMasker -pa $cpu -xsmall -lib consensi.fa.classified ${genome_query.fa}
   ```
 
-#### - Pairwise genome alignemnts
+### - Pairwise genome alignemnts
   Detailed modified UCSC pipeline [here](https://github.com/hillerlab/GenomeAlignmentTools)
 
-#### - Genome annotation using [TOGA](https://github.com/hillerlab/TOGA)
+### - Genome annotation using [TOGA](https://github.com/hillerlab/TOGA)
   ```
   toga.py ${chains.ref.query} ${annotation_ref.bed} ${genome_ref.2bit} ${genome_query.2bit} -i ${isoforms.-reftxt} --cb 3,5 --cjn 500 --u12 ${U12sites_ref.tsv} --ms
   ```
-#### - Exon-by-exon codon alignments and cleaning using [extract_codon_alignment.py](https://github.com/hillerlab/TOGA/blob/master/supply/extract_codon_alignment.py) and [HmmCleaner](https://metacpan.org/dist/Bio-MUST-Apps-HmmCleaner/view/bin/HmmCleaner.pl)
+### - Exon-by-exon codon alignments and cleaning using [extract_codon_alignment.py](https://github.com/hillerlab/TOGA/blob/master/supply/extract_codon_alignment.py) and [HmmCleaner](https://metacpan.org/dist/Bio-MUST-Apps-HmmCleaner/view/bin/HmmCleaner.pl)
    ```
    ## exon-by-exon alignment
    extract_codon_alignments_from_toga.py ${f_listSP} ${annotation_ref.bed} ${trasncriptID} -o ${trasncriptID}_raw.fa -s
@@ -117,7 +132,7 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
    HmmCleaner.pl -costs ${c1} ${c2} ${c3} ${c4} ${transcriptID}_raw.fa
    ```
   
-#### - Phylogenetic and Divergence Time Estimation
+### - Phylogenetic and Divergence Time Estimation
   - Gene trees using [raxml](https://cme.h-its.org/exelixis/web/software/raxml/)
   ```
   raxmlHPC-PTHREADS -T ${nThreads} -s ${transcriptID}.fa -m ${sustMod} -N ${reps} -p ${seedSearch} -w ${P_out} -f a -N ${bootstrapReps} --bootstop-perms=${bootstrapReps} -n ${transcriptID} -x ${seedSearch} 
@@ -152,7 +167,7 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
    ```
    
 
-#### - Genome-wide Unbiased Selection Screen using [HYPHY-aBSREL](https://stevenweaver.github.io/hyphy-site/methods/selection-methods/)
+### - Genome-wide Unbiased Selection Screen using [HYPHY-aBSREL](https://stevenweaver.github.io/hyphy-site/methods/selection-methods/)
   For each transcript, the species tree should be trimmed to kepp only branches represented in alignemnt. We used [tree_doctor](https://github.com/UCSantaCruzComputationalGenomicsLab/phast/blob/master/src/util/tree_doctor.c).
    ```
   ## trimm input tree 
@@ -162,7 +177,7 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
   hyphy absrel --alignment ${P_out}/${trasncriptID}.fa --tree ${P_out}/${trasncriptID}.prunnedTree.tre --output ${P_out}/${trasncriptID}.ABSREL.json | tee -a ${P_out}/${trasncriptID}.ABSREL.log
    ```
 
-#### - Gene enrichment analyses using [gprofiler2](https://biit.cs.ut.ee/gprofiler/page/r)
+### - Gene enrichment analyses using [gprofiler2](https://biit.cs.ut.ee/gprofiler/page/r)
    ```R
    ## Load R and library
    library(gprofiler2)
@@ -174,7 +189,7 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
    write.table(sapply(multi_sig_noBG_tmp_gostres$result, FUN = paste), file=out_summaryErich, sep="\t", quote=FALSE, row.names=FALSE)
 ```
 
-#### -  Correlation between branch length and number of genes under selection
+### -  Correlation between branch length and number of genes under selection
 
   Negative binomial regression was perfomed using several R libraries, [see code here](https://github.com/lmdavalos/count2branches).
 

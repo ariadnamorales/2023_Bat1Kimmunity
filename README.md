@@ -4,8 +4,37 @@ No new software was developed for this study, thus we provide example commands f
 
 
 ## Analyses
-#### - Genome assembly
+### - Genome assembly
 
+#### - Contig assembly
+  ```
+  ## HiFiasm assemblies
+  hifiasm -l2 -o asm_mRhiAff.asm -t 38 *fasta.gz
+  awk '/^S/{print ">"$2"\n"$3}' asm_mRhiAff.asm.p_ctg.gfa | fold > asm_mRhiAff.asm.p_ctg.fasta
+  awk '/^S/{print ">"$2"\n"$3}' asm_mRhiAff.asm.a_ctg.gfa | fold > asm_mRhiAff.asm.a_ctg.fasta
+  
+  ## HiCanu assemblies
+  canu -p asm_mDorCyc -d hicanu genomeSize=2200m -pacbio-hifi *fasta.gz
+  
+  ## Canu ONT assemblies
+  canu -p asm_mMegSpa_canu2.1_ont -d canu genomeSize=2000m -nanopore *fastq.gz
+  
+  ## Medake polishing
+  medaka_consensus -i merge_ont.fastq.gz -d asm_mMegSpa_canu2.1_ont.contigs.fasta -o polished -t 24 -m r941_prom_hac_g507
+  
+  ## Purge-dups
+  purge_dups/src/split_fa consensus.fasta > split.genome.fasta
+  purge_dups/src/calcuts coverage/PB.stat > cutoffs
+  minimap2 -I 200G -t 1 -xasm5 -DP split.genome.fasta split.genome.fasta > split.genome.paf
+  purge_dups/src/purge_dups -2 -c coverage/PB.base.cov -T cutoffs split.genome.paf > dups.bed
+  purge_dups/src/get_seqs -e -p asm_mMegSpa.canu.medaka dups.bed consensus.fasta
+  ```
+
+#### - Scaffolding
+  ```
+  ## 
+  
+  ```
 #### - Annotation of Transposable Elements
 Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)
 

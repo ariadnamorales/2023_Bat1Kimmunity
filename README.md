@@ -51,6 +51,19 @@ No new software was developed for this study, thus we provide example commands f
   bash dedup.sh hic.combined.bam 24
   bedtools bamtobed -i sort_dedup/combined.sort.dp.sort_n.bam > combined.sort.dp.sort_n.bed
   python2.7 salsa2/SALSA-2.2/run_pipeline.py -a genome.fasta -l genome.fasta.fai -e enz.txt -b combined.sort.dp.sort_n.bed -o salsa2_out -m yes -i 50 -p yes
+  
+  ## Manual curation
+  bwa mem -t 24 -v 3 -SP5M contigs.fasta hic_reads_R1.fastq.gz hic_reads_R2.fastq.gz | samtools view -bhS - > hic_reads_bwa.bam 
+  samtools view -h .//hic_1/bams/mTadBra_L64736_Track-105193_bwa.bam | pairtools parse --nproc-in 24 --nproc-out 24 -c contigs.fasta.chrom.sizes -o hic_reads.parsed.pairsam.gz
+  pairtools sort --tmpdir .//hic_1/tmp --memory 8G --nproc 24 -o hic_reads.sorted.pairsam.gz hic_reads.parsed.pairsam.gz
+  pairtools dedup --nproc-in 24 --nproc-out 24 -o hic_reads.dedup.pairsam.gz hic_reads.sorted.pairsam.gz
+  pairtools select --nproc-in 24 --nproc-out 24 '(pair_type == "UU") or (pair_type == "UR") or (pair_type == "RU")' -o hic_reads.filtered.pairsam.gz hic_reads.dedup.pairsam.gz
+  pairtools split --nproc-in 24 --nproc-out 24 --output-pairs hic_reads.filtered.pairs.gz --output-sam hic_reads.filtered.bam hic_reads.filtered.pairsam.gz
+  pairix -f -p pairs hic_reads.filtered.pairs.gz
+  HDF5_USE_FILE_LOCKING=FALSE cooler cload pairix -p 24 contigs.fasta.chrom.sizes:5000 hic_reads.filtered.pairs.gz output.5000.cool
+  HDF5_USE_FILE_LOCKING=FALSE cooler balance output.5000.cool
+  HDF5_USE_FILE_LOCKING=FALSE cooler zoomify --resolutions 10000,20000,40000,60000,80000,100000,120000,150000,200000,300000,400000,500000 output.5000.cool
+  Script for editing genome available here: https://git.mpi-cbg.de/assembly/programs/manualcurationhic
   ```
   
 #### - Polishing

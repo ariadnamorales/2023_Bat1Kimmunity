@@ -19,7 +19,7 @@ No new software was developed for this study, thus we provide example commands f
   ## Canu ONT assemblies
   canu -p asm_mMegSpa_canu2.1_ont -d canu genomeSize=2000m -nanopore *fastq.gz
   
-  ## Medake polishing
+  ## Medaka ONT polishing
   medaka_consensus -i merge_ont.fastq.gz -d asm_mMegSpa_canu2.1_ont.contigs.fasta -o polished -t 24 -m r941_prom_hac_g507
   
   ## Purge-dups

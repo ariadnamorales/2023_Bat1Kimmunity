@@ -3,19 +3,19 @@
 We did not develop new software for this study, thus we provide example commands for analyses or provide links to other sources employed.
 
 ### Content:
- - [GenomeAssembly](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--genome-assembly)<br>
-   * [Contig assembly)](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--contig-assembly)<br>
-   * [Scaffolding](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--contig-assembly)<br>
-   * [Polishing](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--polishing)<br>
- - [Annotation of Transposable Elements](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--annotation-of-transposable-elements)<br>
- - [Repeat masking](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--repeat-masking-for-pairwise-genome-alignemnts)<br>
- - [Pairwise genome alignemnts](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--pairwise-genome-alignemnts)<br>
- - [Genome annotation using TOGA](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--genome-annotation-using-toga)<br>
- - [Exon-by-exon codon alignments](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--exon-by-exon-codon-alignments-and-cleaning-using-extract_codon_alignmentpy-and-hmmcleaner)<br>
- - [Phylogenetic and Divergence Time Estimation](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--phylogenetic-and-divergence-time-estimation)<br>
- - [Genome-wide Unbiased Selection Screen](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--genome-wide-unbiased-selection-screen-using-hyphy-absrel)<br>
- - [Gene Enrichment Analyses](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#--gene-enrichment-analyses-using-gprofiler2)<br>
- - [Correlation between branch length and number of genes under selection](https://github.com/ariadnamorales/2023_Bat1Kimmunity/edit/main/README.md#---correlation-between-branch-length-and-number-of-genes-under-selection)<br>
+ - [GenomeAssembly](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--genome-assembly)<br>
+   * [Contig assembly)](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--contig-assembly)<br>
+   * [Scaffolding](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--contig-assembly)<br>
+   * [Polishing](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--polishing)<br>
+ - [Annotation of Transposable Elements](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--annotation-of-transposable-elements)<br>
+ - [Repeat masking](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--repeat-masking-for-pairwise-genome-alignemnts)<br>
+ - [Pairwise genome alignemnts](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--pairwise-genome-alignemnts)<br>
+ - [Genome annotation using TOGA](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--genome-annotation-using-toga)<br>
+ - [Exon-by-exon codon alignments](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--exon-by-exon-codon-alignments-and-cleaning-using-extract_codon_alignmentpy-and-hmmcleaner)<br>
+ - [Phylogenetic and Divergence Time Estimation](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--phylogenetic-and-divergence-time-estimation)<br>
+ - [Genome-wide Unbiased Selection Screen](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--genome-wide-unbiased-selection-screen-using-hyphy-absrel)<br>
+ - [Gene Enrichment Analyses](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--gene-enrichment-analyses-using-gprofiler2)<br>
+ - [Correlation between branch length and number of genes under selection](https://github.com/ariadnamorales/2023_Bat1Kimmunity#---correlation-between-branch-length-and-number-of-genes-under-selection)<br>
 
 
 ## Analyses

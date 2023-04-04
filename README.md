@@ -4,7 +4,87 @@ No new software was developed for this study, thus we provide example commands f
 
 
 ## Analyses
-#### - Genome assembly
+### - Genome assembly
+
+#### - Contig assembly
+  ```
+  ## HiFiasm assemblies
+  hifiasm -l2 -o asm_mRhiAff.asm -t 38 *fasta.gz
+  awk '/^S/{print ">"$2"\n"$3}' asm_mRhiAff.asm.p_ctg.gfa | fold > asm_mRhiAff.asm.p_ctg.fasta
+  awk '/^S/{print ">"$2"\n"$3}' asm_mRhiAff.asm.a_ctg.gfa | fold > asm_mRhiAff.asm.a_ctg.fasta
+  
+  ## HiCanu assemblies
+  canu -p asm_mDorCyc -d hicanu genomeSize=2200m -pacbio-hifi *fasta.gz
+  
+  ## Canu ONT assemblies
+  canu -p asm_mMegSpa_canu2.1_ont -d canu genomeSize=2000m -nanopore *fastq.gz
+  
+  ## Medaka ONT polishing
+  medaka_consensus -i merge_ont.fastq.gz -d asm_mMegSpa_canu2.1_ont.contigs.fasta -o polished -t 24 -m r941_prom_hac_g507
+  
+  ## Purge-dups
+  purge_dups/src/split_fa consensus.fasta > split.genome.fasta
+  purge_dups/src/calcuts coverage/PB.stat > cutoffs
+  minimap2 -I 200G -t 1 -xasm5 -DP split.genome.fasta split.genome.fasta > split.genome.paf
+  purge_dups/src/purge_dups -2 -c coverage/PB.base.cov -T cutoffs split.genome.paf > dups.bed
+  purge_dups/src/get_seqs -e -p asm_mMegSpa.canu.medaka dups.bed consensus.fasta
+  ```
+
+#### - Scaffolding
+  ```
+  ## Scaff10X
+  longranger-2.2.2/longranger mkref contigs.fasta
+  longranger-2.2.2/longranger align --reference=refdata-contigs --fastqs=10x_dir --sample=mRhiAff
+  scaff10x -nodes 24 -bam possorted_bam.bam contigs.fasta scaff10x.fasta
+  longranger-2.2.2/longranger mkref scaff10x.fasta
+  longranger-2.2.2/longranger align --reference=refdata-scaff10x --fastqs=10x_dir --sample=mRhiAff
+  break10x -nodes 24 -bam possorted_bam.bam scaff10x.fasta break10x.fasta
+  
+  ## Salsa2
+  bwa index genome.fasta
+  samtools index genome.fasta
+  bwa mem -t24 -B8 genome.fasta hic_R1.fastq.gz | samtools view -@24 -Sb - > hic_R1.bam
+  samtools view -h hic_R1.bam | perl filter_five_end.pl | samtools view -@24 - > hic_R1.filtered.bam
+  bwa mem -t24 -B8 genome.fasta hic_R2.fastq.gz | samtools view -@24 -Sb - > hic_R2.bam
+  samtools view -h hic_R2.bam | perl filter_five_end.pl | samtools view -@24 - > hic_R2.filtered.bam
+  perl two_read_bam_combiner.pl hic_R1.filtered.bam hic_R2.filtered.bam | samtools view -@24 -Sb > hic.combined.bam
+  bash dedup.sh hic.combined.bam 24
+  bedtools bamtobed -i sort_dedup/combined.sort.dp.sort_n.bam > combined.sort.dp.sort_n.bed
+  python2.7 salsa2/SALSA-2.2/run_pipeline.py -a genome.fasta -l genome.fasta.fai -e enz.txt -b combined.sort.dp.sort_n.bed -o salsa2_out -m yes -i 50 -p yes
+  
+  ## Manual curation
+  bwa mem -t 24 -v 3 -SP5M contigs.fasta hic_reads_R1.fastq.gz hic_reads_R2.fastq.gz | samtools view -bhS - > hic_reads_bwa.bam 
+  samtools view -h .//hic_1/bams/mTadBra_L64736_Track-105193_bwa.bam | pairtools parse --nproc-in 24 --nproc-out 24 -c contigs.fasta.chrom.sizes -o hic_reads.parsed.pairsam.gz
+  pairtools sort --tmpdir .//hic_1/tmp --memory 8G --nproc 24 -o hic_reads.sorted.pairsam.gz hic_reads.parsed.pairsam.gz
+  pairtools dedup --nproc-in 24 --nproc-out 24 -o hic_reads.dedup.pairsam.gz hic_reads.sorted.pairsam.gz
+  pairtools select --nproc-in 24 --nproc-out 24 '(pair_type == "UU") or (pair_type == "UR") or (pair_type == "RU")' -o hic_reads.filtered.pairsam.gz hic_reads.dedup.pairsam.gz
+  pairtools split --nproc-in 24 --nproc-out 24 --output-pairs hic_reads.filtered.pairs.gz --output-sam hic_reads.filtered.bam hic_reads.filtered.pairsam.gz
+  pairix -f -p pairs hic_reads.filtered.pairs.gz
+  HDF5_USE_FILE_LOCKING=FALSE cooler cload pairix -p 24 contigs.fasta.chrom.sizes:5000 hic_reads.filtered.pairs.gz output.5000.cool
+  HDF5_USE_FILE_LOCKING=FALSE cooler balance output.5000.cool
+  HDF5_USE_FILE_LOCKING=FALSE cooler zoomify --resolutions 10000,20000,40000,60000,80000,100000,120000,150000,200000,300000,400000,500000 output.5000.cool
+  Script for editing genome available here: https://git.mpi-cbg.de/assembly/programs/manualcurationhic
+  ```
+  
+#### - Polishing
+  ```
+  ## PacBio HiFi polishing
+  pbmm2 align mRhiAff.fasta bam.fofn asm_mRhiAff.mapped.bam --sort -j 16 -J 8 --preset CCS -N 1
+  singularity exec -B /projects --bind /usr/lib/locale/ deepvariant.sif /opt/deepvariant/bin/run_deepvariant --model_type=PACBIO --ref=mRhiAff.newScaff.fasta --reads=asm_mRhiAff.mapped.bam --output_vcf=mRhiAff.mapped.deepVariant.vcf.gz --num_shards=24
+  bcftools view --threads=12 -i 'FILTER=\"PASS\" && GT=\"1/1\"' -o mRhiAff.mapped.deepVariant.HomFiltered.vcf.gz mRhiAff.mapped.deepVariant.vcf.gz
+  bcftools index mRhiAff.mapped.deepVariant.HomFiltered.vcf.gz
+  bcftools consensus -f mRhiAff.newScaff.fasta -o asm_mRhiAff.deepVariant.fasta mRhiAff.mapped.deepVariant.HomFiltered.vcf.gz
+  
+  ## 10X polishing
+  longranger-2.2.2/longranger mkref genome.fasta
+  longranger-2.2.2/longranger align --reference=refdata-genome --fastqs=10x_dir --sample=mRhiAff
+  freebayes-1.3.2/freebayes/bin/freebayes -f genome.fasta -g 600 --bam possorted.bam | bcftools view --no-version -Ou > freebayes.bcf
+  bcftools view -i -Oz freebayes.bcf > freebayes.vcf
+  merfin/build/bin/merfin -polish -sequence genome.fasta -readmers 10x_database.meryl -peak 32 -vcf freebayes.vcf -output merfin.vcf
+  bcftools view -Oz merfin.vcf > merfin.vcf.gz && bcftools index merfin.vcf.gz
+  bcftools consensus -H 1 -f genome.fasta merfin.vcf.gz > polished_genome.fasta
+  ```
+
 
 #### - Annotation of Transposable Elements
 Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)

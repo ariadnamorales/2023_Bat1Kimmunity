@@ -1,6 +1,6 @@
 # 2023_Bat1Kimmunity
 **Customs scripts used for analyses of 2022-2023 Bat1K Immunity Project.**<br>
-We did not develop new software for this study, thus we provide example commands for analyses or provide links to other sources employed.
+We did not develop new software for this study; thus, we provide example commands for analyses or provide links to other sources employed.
 
 ### Content:
  - [GenomeAssembly](https://github.com/ariadnamorales/2023_Bat1Kimmunity#--genome-assembly)<br>
@@ -102,11 +102,11 @@ We did not develop new software for this study, thus we provide example commands
 
 
 ### - Annotation of Transposable Elements
-Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)
+Methods and code as described by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)
 
 ### - [Repeat masking](http://www.repeatmasker.org) for pairwise genome alignemnts
   ```
-  ## build database for RepeatModeler
+  ## Build database for RepeatModeler
   BuildDatabase -name $query ${genome_query.fa}
   
   ## run RepeatModeler
@@ -116,7 +116,7 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
   RepeatMasker -pa $cpu -xsmall -lib consensi.fa.classified ${genome_query.fa}
   ```
 
-### - Pairwise genome alignemnts
+### - Pairwise genome alignments
   Detailed modified UCSC pipeline [here](https://github.com/hillerlab/GenomeAlignmentTools)
 
 ### - Genome annotation using [TOGA](https://github.com/hillerlab/TOGA)
@@ -140,7 +140,7 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
   
   - Coalescent-based species trees with [ASTRAL](https://github.com/smirarab/ASTRAL)
   ```
-  ## concatenate all raxml gene trees
+  ## Concatenate all raxml gene trees
   cat ${P_out_raxml}/RAxML_bestTree.${transcriptID}" >> ${all_raxml_inTrees}
   
   ##run ASTRAL
@@ -168,9 +168,9 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
    
 
 ### - Genome-wide Unbiased Selection Screen using [HYPHY-aBSREL](https://stevenweaver.github.io/hyphy-site/methods/selection-methods/)
-  For each transcript, the species tree should be trimmed to kepp only branches represented in alignemnt. We used [tree_doctor](https://github.com/UCSantaCruzComputationalGenomicsLab/phast/blob/master/src/util/tree_doctor.c).
+  For each transcript, the species tree should be trimmed to keep only branches represented in alignment. We used [tree_doctor](https://github.com/UCSantaCruzComputationalGenomicsLab/phast/blob/master/src/util/tree_doctor.c).
    ```
-  ## trimm input tree 
+  ## Trimm input tree 
   tree_doctor -a -n -P $(grep '>' ${P_out}/${transcriptID}.fa | sed 's/>//g'| cut -f1 | tr '\n' ',') ${tree} > ${P_out}/${trasncriptID}.prunnedTree.tre
 
   ## run absrel
@@ -182,13 +182,13 @@ Methods and code as describeb by Osmanski et al.,  [In Press](https://www.biorxi
    ## Load R and library
    library(gprofiler2)
    
-   ## run enrichment per mammalian group
+   ## Run enrichment per mammalian group
    multi_sig_noBG_tmp_gostres = gost(listGenes_groups, organism = "hsapiens", significant = TRUE)
    
-   ## save enrichment summary as tab file
+   ## Save enrichment summary as a tab file
    write.table(sapply(multi_sig_noBG_tmp_gostres$result, FUN = paste), file=out_summaryErich, sep="\t", quote=FALSE, row.names=FALSE)
 ```
 
 ### -  Correlation between branch length and number of genes under selection
-  Negative binomial regression was perfomed using several R libraries, [see code here](https://github.com/lmdavalos/count2branches).
+  Negative binomial regression was performed using several R libraries [see code here](https://github.com/lmdavalos/count2branches).
 

@@ -102,7 +102,7 @@ We did not develop new software for this study; thus, we provide example command
 
 
 ### - Annotation of Transposable Elements
-Methods and code as described by Osmanski et al.,  [In Press](https://www.biorxiv.org/content/10.1101/2022.12.28.522108v1)
+Methods and code as described by Osmanski et al.,  [2023](https://www.science.org/doi/10.1126/science.abn1430)
 
 ### - [Repeat masking](http://www.repeatmasker.org) for pairwise genome alignemnts
   ```

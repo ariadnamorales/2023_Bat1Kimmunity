@@ -1,6 +1,5 @@
 # 2023_Bat1Kimmunity
-**Custom scripts used for analyses of paper [Morales et al. 2025, Nature 638, pages449–458 ](https://www.nature.com/articles/s41586-024-08471-0)
-that is part of Bat1K.**<br>
+**Custom scripts used for analyses of paper [Morales et al. 2025, Nature 638, pages449–458 ](https://www.nature.com/articles/s41586-024-08471-0).**<br>
 
 We did not develop new software for this study; thus, we provide example commands for analyses or provide links to other sources employed.
 
